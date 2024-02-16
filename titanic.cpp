@@ -41,3 +41,12 @@ void printMatrix(const matrix& titanicMatrix){
         std::cout << '\n';
     }
 }
+
+double WEIGHTS[3]{0.5, 0.25, 0.25};
+double determineValue(short age, short sex, short pclass){
+    return (1/(age + 1) * WEIGHTS[0] + (1 + sex)/2 * WEIGHTS[1] + 1/pclass * WEIGHTS[2]);
+}
+
+// age = 2 -> sex = 1 -> Pclass = 1;
+
+// 1/age
