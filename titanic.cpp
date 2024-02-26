@@ -1,3 +1,4 @@
+#include "titanic.h"
 #include <algorithm>
 #include <array>
 #include <fstream>
@@ -5,22 +6,7 @@
 #include <sstream>
 #include <vector>
 
-typedef std::vector<std::vector<std::string>> matrix;
-enum COLUMNS {
-    PassengerId,
-    Survived,
-    Pclass,
-    Name,
-    Sex,
-    Age,
-    SibSp,
-    Parch,
-    Ticket,
-    Fare,
-    Cabin,
-    Embarked,
-    Value
-};
+double WEIGHTS[3]{0.5, 0.25, 0.25};
 
 matrix readCsv(const std::string &filePath) {
     std::ifstream ifile(filePath);
@@ -38,6 +24,8 @@ matrix readCsv(const std::string &filePath) {
         if (line.back() == '\r') {
             line.pop_back();
         }  // \r removing (it somehow reads it (no clue))
+
+
         std::stringstream ss(line);
         std::string element;
         std::vector<std::string> row;
@@ -45,9 +33,11 @@ matrix readCsv(const std::string &filePath) {
         while (std::getline(ss, element, ';')) {
             row.push_back(element);
         }
+
         if (row.size() < COLUMNS::Embarked + 1) {
             row.push_back("");
         }
+
         titanicMatrix.push_back(row);
     }
 
@@ -63,11 +53,11 @@ void printMatrix(const matrix &titanicMatrix) {
     }
 }
 
-double WEIGHTS[3]{0.5, 0.25, 0.25};
 double determineValue(short age, short sex, short pclass) {
     return (1.0 / (age + 1) * WEIGHTS[0] + (1 + sex) / 2.0 * WEIGHTS[1] +
             1.0 / pclass * WEIGHTS[2]);
 }
+
 void fillNan(matrix &titanicMatrix, int k) {
     std::vector<std::string> column;
 
@@ -84,6 +74,7 @@ void fillNan(matrix &titanicMatrix, int k) {
         }
     }
 }
+
 void addValue(matrix &titanicMatrix) {
     titanicMatrix[0].push_back("value");
 
@@ -95,33 +86,75 @@ void addValue(matrix &titanicMatrix) {
             std::to_string(determineValue(age, sex, pclass)));
     }
 }
-struct Passenger {
-    size_t id;
-    std::string name;
-    size_t boats;
-    double value;
-};
-std::vector<Passenger> packPassengers(matrix titanicMatrix, size_t boats,
+
+bool Passenger::operator >(const Passenger &right) const{
+    return value > right.value;
+}
+
+bool compP(const Passenger &left, const Passenger &right){
+    return left > right;
+}
+
+void Boat::addP(const Passenger& passenger){
+    seats.push_back(passenger);
+}
+
+void Boat::setID(size_t num) {
+    boatID = num;
+}
+
+void Boat::printSeats() const {
+    std::cout << "Boat ID: " << boatID + 1 << '\n';
+    for (const Passenger& x: seats){
+        std::cout << x.id << " " << x.name << " " << x.value << '\n';
+    }
+    std::cout << "----------------------------------------------------------\n";
+
+}
+
+boatsVector packPassengers(const matrix& titanicMatrix, size_t boats,
                                       size_t seats) {
-    for (auto x : titanicMatrix) {
-        if (x.size() < 13) {
-            std::cout << x[0] << std::endl;
-        }
-    }
-    std::sort(titanicMatrix.begin() + 1, titanicMatrix.end(),
-              [](const std::vector<std::string> &left,
-                 const std::vector<std::string> &right) {
-                  return std::stod(left[COLUMNS::Value]) >
-                         std::stod(right[COLUMNS::Value]);
-              });
-    std::vector<Passenger> survived;
-    for (size_t i = 1; i <= boats * seats; i++) {
+
+    std::vector<Passenger> passengers;
+
+    for (size_t i = 1; i < titanicMatrix.size(); i++){
         Passenger passenger{std::stoul(titanicMatrix[i][COLUMNS::PassengerId]),
-                            titanicMatrix[i][COLUMNS::Name], i / seats + 1,
+                            titanicMatrix[i][COLUMNS::Name], titanicMatrix[i][COLUMNS::Sex],
+                            std::stoul(titanicMatrix[i][COLUMNS::Age]),
+                            std::stoul(titanicMatrix[i][COLUMNS::Pclass]),
                             std::stod(titanicMatrix[i][COLUMNS::Value])};
-        // passenger.id = std::stoi(titanicMatrix[i][COLUMNS::PassengerId]);
-        // passenger.name =titanicMatrix[i][COLUMNS::Name];
-        survived.push_back(passenger);
+        passengers.push_back(passenger);
     }
+
+    std::sort(passengers.begin(), passengers.end(), compP);
+
+    boatsVector survived;
+    size_t currentInd = 0;
+    for (size_t b = 0; b < boats; b++){
+        Boat buff;
+        buff.setID(b);
+        for (size_t s = 0; s < seats; s++){
+            buff.addP(passengers[currentInd++]);
+        }
+        survived.push_back(buff);
+    }
+
     return survived;
 }
+
+
+//    std::sort(titanicMatrix.begin() + 1, titanicMatrix.end(),
+//              [](const std::vector<std::string> &left,
+//                 const std::vector<std::string> &right) {
+//                  return std::stod(left[COLUMNS::Value]) >
+//                         std::stod(right[COLUMNS::Value]);
+//              });
+//    std::vector<Passenger> survived;
+//    for (size_t i = 1; i <= boats * seats; i++) {
+//        Passenger passenger{std::stoul(titanicMatrix[i][COLUMNS::PassengerId]),
+//                            titanicMatrix[i][COLUMNS::Name], i / seats + 1,
+//                            std::stod(titanicMatrix[i][COLUMNS::Value])};
+//        // passenger.id = std::stoi(titanicMatrix[i][COLUMNS::PassengerId]);
+//        // passenger.name =titanicMatrix[i][COLUMNS::Name];
+//        survived.push_back(passenger);
+//    }

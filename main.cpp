@@ -11,11 +11,12 @@ int main()
         fillNan(titanicMatrix, k);
     }
     addValue(titanicMatrix);
-    printMatrix(titanicMatrix);
-    std::vector<Passenger> survived = packPassengers(titanicMatrix, 10, 10);
-    for (const Passenger &x : survived)
+//    printMatrix(titanicMatrix);
+    boatsVector survived = packPassengers(titanicMatrix, 10, 10);
+    //Passenger changed:
+    for (const Boat &x : survived)
     {
-        std::cout << x.id << '\t' << x.name << '\t' << x.boats << '\t' << x.value << std::endl;
+        x.printSeats();
     }
     return 0;
 }

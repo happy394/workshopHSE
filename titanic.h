@@ -4,7 +4,10 @@
 #include <vector>
 #include <string>
 
+//extern double WEIGHTS[3]{0.5, 0.25, 0.25};
+
 typedef std::vector<std::vector<std::string>> matrix;
+
 enum COLUMNS
 {
     PassengerId,
@@ -18,20 +21,35 @@ enum COLUMNS
     Ticket,
     Fare,
     Cabin,
-    Embarked
+    Embarked,
+    Value
 };
+struct Passenger {public:
+    size_t id;
+    std::string name;
+    std::string sex;
+    size_t age;
+    size_t pclass;
+    double value;
+    bool operator >(const Passenger &right) const;
+};
+class Boat {
+public:
+    void addP(const Passenger&);
+    void setID(size_t);
+    void printSeats()const;
+private:
+    std::vector<Passenger> seats;
+    size_t boatID;
+};
+
+typedef std::vector<Boat> boatsVector;
+
 matrix readCsv(const std::string &filePath);
 void printMatrix(const matrix &titanicMatrix);
 double determineValue(short age, short sex, short pclass);
 void fillNan(matrix &titanicMatrix, int k);
 void addValue(matrix &titanicMatrix);
-struct Passenger
-{
-    size_t id;
-    std::string name;
-    size_t boats;
-    double value;
-};
-std::vector<Passenger> packPassengers(matrix titanicMatrix, size_t boats, size_t seats);
+boatsVector packPassengers(const matrix& titanicMatrix, size_t boats, size_t seats);
 
 #endif // TITANIC_TITANIC_H
