@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(main main.cpp
         titanic.h
-        titanic.cpp)
+        titanic.cpp obesity.cpp obesity.h)
