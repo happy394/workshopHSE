@@ -1,4 +1,5 @@
 #include "titanic.h"
+#include "obesity.h"
 #include <algorithm>
 #include <array>
 #include <fstream>
@@ -166,3 +167,25 @@ boatsVector packPassengers(const matrix &titanicMatrix, size_t boats,
 
     return survived;
 }
+
+double generateWeight(const GenderMap& gendermap, std::string sex, int age){
+    const std::map<int, double>& passPair = gendermap.at(sex);
+    std::map <int, double>::const_iterator it = passPair.lower_bound(age);
+    return (it == passPair.end() ? (--it)->second : it->second);
+}
+
+std::vector<Passenger> fillPassengers(const matrix& titanicMatrix, const GenderMap& gendermap){
+    std::vector<Passenger> resVector;
+    for (const auto& i: titanicMatrix){
+        Passenger pass{std::stoul(i[COLUMNS::PassengerId]),
+                       i[COLUMNS::Name],
+                       i[COLUMNS::Sex],
+                       std::stoul(i[COLUMNS::Age]),
+                       std::stoul(i[COLUMNS::Pclass]),
+                       std::stod(i[COLUMNS::Value]),
+                       generateWeight(gendermap, i[COLUMNS::Sex], std::stoul(i[COLUMNS::Age]))};
+        resVector.push_back(pass);
+    }
+    return resVector;
+}
+

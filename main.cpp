@@ -7,12 +7,12 @@ std::string FILEPATH2 = "../data/obesity.csv";
 
 int main()
 {
-//    matrix titanicMatrix = readCsv(FILEPATH);
-//    for (int k : {COLUMNS::Age, COLUMNS::Sex, COLUMNS::Pclass})
-//    {
-//        fillNan(titanicMatrix, k);
-//    }
-//    addValue(titanicMatrix);
+    matrix titanicMatrix = readCsv(FILEPATH);
+    for (int k : {COLUMNS::Age, COLUMNS::Sex, COLUMNS::Pclass})
+    {
+        fillNan(titanicMatrix, k);
+    }
+    addValue(titanicMatrix);
 ////    printMatrix(titanicMatrix);
 //    boatsVector survived = packPassengers(titanicMatrix, 10, 10);
 //    //Passenger changed:
@@ -20,6 +20,10 @@ int main()
 //    {
 //        x.printSeats();
 //    }
-    printGenderMap(readcsv(FILEPATH2));
+//    printGenderMap(readcsv(FILEPATH2));
+    for (auto j: fillPassengers(titanicMatrix, readcsv(FILEPATH2))){
+        std::cout << j.name << " " << j.weight << '\n';
+    }
+
     return 0;
 }

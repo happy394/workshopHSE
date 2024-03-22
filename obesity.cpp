@@ -61,26 +61,26 @@ GenderMap readcsv(const std::string& filePath){
         }
 
         buff.push_back(Person(a, s, w));
-        for (const std::string& sex: {"Male", "Female"}){
-            AgeWeight ages;
-            for (int age = 0; age <= 100; age++){
-                std::vector<Person> buff2;
-                std::copy_if(buff.begin(), buff.end(),
-                             std::back_inserter(buff2),
-                             [sex, age](const Person& alone){
-                    return sex == alone.sex && age == alone.age;
-                });
-                if (!buff2.empty()) {
-                    double mean = std::reduce(buff2.begin(),
-                                              buff2.end(),
-                                              Person(0, "female", 0)).weight / buff2.size();
-                    ages.insert(std::pair<int, double>(age, mean));
-                }
-            }
-            genderMap.insert({sex, ages});
-        }
-    }
 
+    }
+    for (const std::string& sex: {"Male", "Female"}){
+        AgeWeight ages;
+        for (int age = 0; age <= 100; age++){
+            std::vector<Person> buff2;
+            std::copy_if(buff.begin(), buff.end(),
+                         std::back_inserter(buff2),
+                         [sex, age](const Person& alone){
+                             return sex == alone.sex && age == alone.age;
+                         });
+            if (!buff2.empty()) {
+                double mean = std::reduce(buff2.begin(),
+                                          buff2.end(),
+                                          Person(0, "female", 0)).weight / buff2.size();
+                ages.insert(std::pair<int, double>(age, mean));
+            }
+        }
+        genderMap.insert({sex, ages});
+    }
     return genderMap;
 }
 

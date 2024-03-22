@@ -1,6 +1,7 @@
 #ifndef TITANIC_TITANIC_H
 #define TITANIC_TITANIC_H
 
+#include "obesity.h"
 #include <vector>
 #include <string>
 
@@ -31,6 +32,7 @@ struct Passenger {public:
     size_t age;
     size_t pclass;
     double value;
+    double weight;
     bool operator >(const Passenger &right) const;
 };
 class Boat {
@@ -43,6 +45,7 @@ private:
     size_t boatID;
 };
 
+std::vector<Passenger> fillPassengers(const matrix&);
 typedef std::vector<Boat> boatsVector;
 
 matrix readCsv(const std::string &filePath);
@@ -51,5 +54,6 @@ double determineValue(short age, short sex, short pclass);
 void fillNan(matrix &titanicMatrix, int k);
 void addValue(matrix &titanicMatrix);
 boatsVector packPassengers(const matrix& titanicMatrix, size_t boats, size_t seats);
+std::vector<Passenger> fillPassengers(const matrix& titanicMatrix, const GenderMap& gendermap);
 
 #endif // TITANIC_TITANIC_H
